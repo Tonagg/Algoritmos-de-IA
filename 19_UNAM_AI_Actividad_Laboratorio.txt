@@ -1,0 +1,1040 @@
+================================================================================
+                    UNAM - FACULTAD DE CIENCIAS
+                    INTELIGENCIA ARTIFICIAL
+                    TEMA 4 - ALGORITMOS DE APRENDIZAJE
+
+         EJERCICIOS CON ENTRADAS DE DATOS - RESUELTOS PASO A PASO
+              (Los únicos que pueden cambiar valores)
+
+           Total: 15 ejercicios (8 Parte I + 7 Parte II)
+
+   ⚠ IMPORTANTE: en el examen los datos PUEDEN CAMBIAR.
+   El procedimiento es siempre el mismo. Sigue el método paso a paso.
+================================================================================
+
+
+
+################################################################################
+#                                                                              #
+#                           PARTE I (8 ejercicios)                             #
+#                                                                              #
+################################################################################
+
+
+
+================================================================================
+EJERCICIO 1 (P1): MATRIZ DE CONFUSIÓN + MÉTRICAS BÁSICAS
+================================================================================
+
+ENTRADA DEL EJEMPLO:   TP = 50, FP = 10, FN = 5, TN = 35
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO (úsalo con cualquier valor):
+--------------------------------------------------------------------------------
+
+PASO 1 - Construir matriz de confusión:
+
+                    | Predicho POSITIVO | Predicho NEGATIVO |
+  ------------------+-------------------+-------------------+
+  Real POSITIVO     |       TP          |        FN         |
+  Real NEGATIVO     |       FP          |        TN         |
+
+PASO 2 - Aplicar las 4 fórmulas:
+
+  Accuracy   = (TP + TN) / (TP + TN + FP + FN)
+  Precision  =  TP / (TP + FP)
+  Recall     =  TP / (TP + FN)
+  F1-score   = 2·(Precision·Recall) / (Precision + Recall)
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO CON LOS VALORES DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+Matriz:
+                    | Pred POS | Pred NEG |
+  Real POSITIVO     |    50    |     5    |
+  Real NEGATIVO     |    10    |    35    |
+
+Total = 50 + 10 + 5 + 35 = 100
+
+Accuracy  = (50 + 35) / 100 = 85/100      = 0.85    (85.00%)
+Precision = 50 / (50 + 10)  = 50/60       = 0.8333  (83.33%)
+Recall    = 50 / (50 + 5)   = 50/55       = 0.9091  (90.91%)
+F1        = 2·(0.8333·0.9091)/(0.8333+0.9091)
+          = 2·0.7576 / 1.7424
+          = 1.5152 / 1.7424
+          = 0.8696  (86.96%)
+
+--------------------------------------------------------------------------------
+💬 DISCUSIÓN: ¿Qué métrica priorizar en detección de enfermedad?
+--------------------------------------------------------------------------------
+
+→ RECALL (Sensibilidad).
+
+Justificación: en medicina un FALSO NEGATIVO (decir "sano" a un enfermo)
+puede ser MORTAL. Recall mide qué tan bien detectamos todos los enfermos
+reales. Aceptamos algunos falsos positivos porque un examen confirmatorio
+posterior los puede descartar sin daño.
+
+
+
+================================================================================
+EJERCICIO 2 (P1): MÉTRICAS CON DESBALANCE DE CLASES
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+                    | Pred Sí | Pred No |
+  Real Sí           |    8    |    2    |
+  Real No           |   90    |   900   |
+
+→ TP = 8, FN = 2, FP = 90, TN = 900
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+1. Identificar TP/FN/FP/TN según el orden de la tabla.
+   ⚠ OJO: la tabla puede venir con filas/columnas invertidas.
+     Reglas seguras:
+     - TP = predicho POSITIVO y era POSITIVO
+     - FN = predicho NEGATIVO pero era POSITIVO
+     - FP = predicho POSITIVO pero era NEGATIVO
+     - TN = predicho NEGATIVO y era NEGATIVO
+
+2. Calcular Accuracy (te servirá para mostrar que ENGAÑA con desbalance).
+3. Calcular Precision y Recall.
+4. Comparar Accuracy con un "modelo trivial" (todo NO):
+     Acc_trivial = (FP + TN) / total
+   Si supera al modelo, es prueba de que accuracy NO sirve aquí.
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO CON LOS VALORES DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+Total = 8 + 2 + 90 + 900 = 1000
+
+Accuracy  = (8 + 900) / 1000 = 908/1000 = 0.908  (90.8%)
+Precision = 8 / (8 + 90)     = 8/98     = 0.0816 (8.16%)
+Recall    = 8 / (8 + 2)      = 8/10     = 0.80   (80.00%)
+F1        = 2·(0.0816·0.80)/(0.0816+0.80) = 0.1481 (14.81%)
+
+Modelo trivial "todo es No":
+  Acc_trivial = (FP + TN)/total = (90 + 900)/1000 = 0.99 (99%)
+  ¡Un modelo INÚTIL supera al modelo evaluado!
+
+--------------------------------------------------------------------------------
+💬 RESPUESTAS:
+--------------------------------------------------------------------------------
+
+1) ¿Accuracy es buena métrica? NO.
+   Las clases están desbalanceadas (1% vs 99%). Un modelo trivial
+   logra 99% accuracy sin aprender nada.
+
+2) Recall = 0.80 ; Precision = 0.0816.
+
+3) Priorizar RECALL (es medicina, no perdamos enfermos), complementar
+   con F1-score como balance.
+
+4) ¿Es buen modelo? REGULAR. Detecta 80% de enfermos (bueno) pero genera
+   90 falsas alarmas por cada 8 aciertos (precision malísima).
+   Útil como tamizaje inicial, requiere prueba confirmatoria posterior.
+
+
+
+================================================================================
+EJERCICIO 3 (P1): ERROR EN REGRESIÓN (MAE vs MSE)
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+  | Real | Pred |
+  | 100  |  90  |
+  | 200  | 210  |
+  | 300  |1000  |
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+PASO 1 - Calcular errores: e_i = y_real - y_pred (signo importa para MSE solo
+         por convención, pero en MSE se eleva al cuadrado y desaparece).
+
+PASO 2 - MAE = (1/n) · Σ |e_i|
+PASO 3 - MSE = (1/n) · Σ (e_i)²
+PASO 4 - RMSE = √MSE  (a veces lo piden, en mismas unidades que y)
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO CON LOS VALORES DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+Errores y cuadrados:
+  | Real | Pred  | Error | |Error| | Error²  |
+  | 100  |   90  |  +10  |   10    |    100  |
+  | 200  |  210  |  -10  |   10    |    100  |
+  | 300  | 1000  | -700  |  700    | 490,000 |
+
+  Suma |Error|  = 10 + 10 + 700      = 720
+  Suma Error²   = 100 + 100 + 490000 = 490,200
+
+MAE  = 720 / 3      = 240
+MSE  = 490200 / 3   = 163,400
+RMSE = √163400      ≈ 404.23
+
+--------------------------------------------------------------------------------
+💬 REFLEXIÓN: ¿Cuál penaliza más errores grandes?
+--------------------------------------------------------------------------------
+
+→ MSE.
+
+Razón: el error de 700 contribuye solo 700 al MAE, pero contribuye
+490,000 al MSE (al cuadrado). Por eso MSE es muy sensible a outliers
+y los errores extremos dominan el cálculo.
+
+
+
+================================================================================
+EJERCICIO 4 (P1): REGRESIÓN LINEAL - INTERPRETACIÓN DE COEFICIENTES
+================================================================================
+
+ENTRADA DEL EJEMPLO:   y = 5 + 2·x₁ - 3·x₂
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO (con cualquier ecuación lineal):
+--------------------------------------------------------------------------------
+
+Para una ecuación de la forma:   y = β₀ + β₁·x₁ + β₂·x₂ + ...
+
+  • β₀ (intercepto) = valor de y cuando todas las x = 0.
+  • Cada βᵢ = cuánto cambia y al aumentar 1 unidad la xᵢ correspondiente,
+              manteniendo las demás constantes.
+  • Signo POSITIVO → relación directa (a más x, más y).
+  • Signo NEGATIVO → relación inversa (a más x, menos y).
+  • Magnitud → impacto relativo de cada variable.
+
+--------------------------------------------------------------------------------
+📐 INTERPRETACIÓN DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+y = 5 + 2·x₁ - 3·x₂
+
+  • Intercepto = 5: cuando x₁=0 y x₂=0, y vale 5.
+  • β₁ = +2: si x₁ sube 1 unidad (x₂ fija), y SUBE 2 unidades.
+  • β₂ = -3: si x₂ sube 1 unidad (x₁ fija), y BAJA 3 unidades.
+  • |β₂| > |β₁| → x₂ tiene mayor impacto que x₁.
+
+Verificación con valores:
+  y(0,0) = 5 + 0 - 0 = 5
+  y(1,0) = 5 + 2 - 0 = 7   (subió 2 al subir x₁)
+  y(0,1) = 5 + 0 - 3 = 2   (bajó 3 al subir x₂)
+  y(2,1) = 5 + 4 - 3 = 6
+  y(2,5) = 5 + 4 - 15 = -6 (x₂ grande → y muy negativa)
+
+--------------------------------------------------------------------------------
+💬 ¿Qué pasa si x₂ aumenta?
+--------------------------------------------------------------------------------
+
+→ y DISMINUYE 3 unidades por cada unidad que aumente x₂.
+   Relación NEGATIVA. x₂ tiene MÁS impacto sobre y que x₁
+   (porque |-3| > |+2|).
+
+
+
+================================================================================
+EJERCICIO 5 (P1): REGRESIÓN LOGÍSTICA - INTERPRETACIÓN
+================================================================================
+
+ENTRADA DEL EJEMPLO:   P(y=1 | x) = 1 / (1 + e^{-(2x - 4)})
+
+Es una sigmoide aplicada a z = 2x - 4.
+Forma general: P(y=1|x) = 1 / (1 + e^{-(b·x + c)})
+  donde b = pendiente del logit y c = intercepto.
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+1. Para evaluar P en un x dado: sustituir, calcular el exponente,
+   aplicar la fórmula.
+
+2. UMBRAL DE DECISIÓN: dónde P=0.5.
+   Igualar el exponente a 0:
+     b·x + c = 0  →  x_umbral = -c / b
+
+3. INTERPRETACIÓN del coeficiente b:
+   • Pendiente del logit (cuán empinada es la sigmoide).
+   • Por cada unidad que sube x, los log-odds suben b.
+   • Los odds se multiplican por e^b.
+   • Signo + → x asocia con clase 1; signo - → asocia con clase 0.
+
+--------------------------------------------------------------------------------
+📐 RESPUESTAS DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+a) ¿Qué pasa cuando x = 2?
+   z = 2·(2) - 4 = 0
+   P(y=1|x=2) = 1 / (1 + e⁰) = 1 / (1 + 1) = 0.5
+   → Probabilidad de 50%. EXACTAMENTE EN LA FRONTERA, decisión ambigua.
+
+b) ¿Cuál es el umbral de decisión?
+   2x - 4 = 0  →  x = 2.
+   • Si x > 2 → P > 0.5 → clase 1.
+   • Si x < 2 → P < 0.5 → clase 0.
+
+c) ¿Qué significa el coeficiente 2?
+   • Es la pendiente del logit (sigmoide empinada).
+   • Por cada unidad que sube x, los log-odds suben 2.
+   • Los odds se multiplican por e² ≈ 7.39 → x positiva
+     se asocia FUERTEMENTE a clase 1.
+   • Coeficiente alto ⇒ transición rápida entre clases (curva muy empinada).
+
+Más ejemplos numéricos (verificación):
+  P(y=1|x=0) = 1/(1+e^4)  ≈ 0.018  (clase 0, casi seguro)
+  P(y=1|x=4) = 1/(1+e^-4) ≈ 0.982  (clase 1, casi seguro)
+
+
+
+================================================================================
+EJERCICIO 6 (P1): SVM - MARGEN MÁXIMO
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+  Clase +1: (2,2), (3,3)
+  Clase -1: (0,0), (1,1)
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+1. UBICAR los puntos en el plano. Ver de qué lado está cada clase.
+
+2. PROPONER recta separadora: que pase exactamente "en medio" de los
+   puntos más cercanos de cada clase, perpendicular a la dirección
+   que los une.
+
+3. IDENTIFICAR vectores de soporte: los puntos MÁS CERCANOS al
+   hiperplano. Son los que "definen" el margen.
+
+Fórmula de distancia de un punto (x₀, y₀) a una recta a·x + b·y + c = 0:
+   d = |a·x₀ + b·y₀ + c| / √(a² + b²)
+
+--------------------------------------------------------------------------------
+📐 RESOLUCIÓN DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+1) DIBUJAR los puntos: todos están sobre la diagonal y = x.
+
+         x₂
+         |
+       3 |          • (3,3)  ← clase +1
+       2 |       • (2,2)     ← clase +1
+       1 |    • (1,1)        ← clase -1
+       0 | • (0,0)           ← clase -1
+         +-----------------> x₁
+           0  1  2  3
+
+2) PROPONER RECTA SEPARADORA:
+   Los puntos más cercanos entre clases son (1,1) y (2,2).
+   Punto medio = (1.5, 1.5).
+   Dirección perpendicular a y=x → pendiente = -1.
+   
+   Ecuación: y - 1.5 = -1·(x - 1.5)  →  y = -x + 3
+   Equivalente: x + y - 3 = 0  →  x + y = 3
+   
+   Verificación con todos los puntos:
+     (0,0): 0+0=0  < 3  → lado negativo ✓
+     (1,1): 1+1=2  < 3  → lado negativo ✓
+     (2,2): 2+2=4  > 3  → lado positivo ✓
+     (3,3): 3+3=6  > 3  → lado positivo ✓
+
+3) VECTORES DE SOPORTE:
+   Distancia de cada punto a la recta x+y-3=0 (a=1, b=1, c=-3):
+     d = |x+y-3| / √2
+   
+     (0,0): |0+0-3|/√2 = 3/√2 ≈ 2.12
+     (1,1): |1+1-3|/√2 = 1/√2 ≈ 0.71  ← MÍNIMA → vector de soporte
+     (2,2): |2+2-3|/√2 = 1/√2 ≈ 0.71  ← MÍNIMA → vector de soporte
+     (3,3): |3+3-3|/√2 = 3/√2 ≈ 2.12
+
+   → VECTORES DE SOPORTE: (1,1) y (2,2).
+   
+   Margen total = 2 · (1/√2) = √2 ≈ 1.41.
+
+
+
+================================================================================
+EJERCICIO 8 (P1): K-NN - CLASIFICACIÓN MANUAL
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+  Clase A: (1,1), (2,2)
+  Clase B: (4,4), (5,5)
+  Nuevo punto: (3,3)
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+PASO 1 - Calcular distancias EUCLIDIANAS desde el nuevo punto a TODOS:
+   d(p, q) = √( (p₁-q₁)² + (p₂-q₂)² )
+
+PASO 2 - Ordenar de menor a mayor distancia.
+
+PASO 3 - Tomar los k vecinos más cercanos.
+
+PASO 4 - Voto mayoritario: contar etiquetas, ganar la clase con
+         más votos. En caso de empate, depende del tie-break.
+
+--------------------------------------------------------------------------------
+📐 CÁLCULOS DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+Distancias desde (3,3):
+  d((3,3),(1,1)) = √(4+4) = √8  ≈ 2.83  [A]
+  d((3,3),(2,2)) = √(1+1) = √2  ≈ 1.41  [A]
+  d((3,3),(4,4)) = √(1+1) = √2  ≈ 1.41  [B]
+  d((3,3),(5,5)) = √(4+4) = √8  ≈ 2.83  [B]
+
+Ranking de cercanía:
+  1°-2°: (2,2)[A] y (4,4)[B] empatados a √2
+  3°-4°: (1,1)[A] y (5,5)[B] empatados a √8
+
+¡Caso muy especial! El punto (3,3) está EXACTAMENTE en la frontera,
+todo es simétrico.
+
+--------------------------------------------------------------------------------
+💬 RESPUESTAS:
+--------------------------------------------------------------------------------
+
+1) Con k = 1:
+   Empate exacto entre (2,2)→A y (4,4)→B (ambos a √2).
+   → EMPATE. La clasificación depende del tie-break del algoritmo.
+   En sklearn: suele tomar el primero según orden interno (a menudo A).
+
+2) Con k = 3:
+   Posición 1: (2,2)→A
+   Posición 2: (4,4)→B
+   Posición 3: empate entre (1,1)→A y (5,5)→B
+   
+   Si entra (1,1): votos 2A vs 1B → CLASE A
+   Si entra (5,5): votos 1A vs 2B → CLASE B
+   
+   → EMPATE TÉCNICO. Resultado depende del tie-break.
+
+3) ¿Qué cambia al variar k?
+   • k pequeño (k=1): muy sensible al ruido, riesgo de overfitting.
+   • k grande: suaviza fronteras, riesgo de underfitting.
+   • Aquí (3,3) está en la frontera exacta por simetría → ejemplo
+     perfecto de cómo k es crítico.
+   
+   Buena práctica: probar varios k con validación cruzada.
+
+
+
+================================================================================
+EJERCICIO 10 (P1): NAIVE BAYES - CLASIFICACIÓN PROBABILÍSTICA
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+
+  Probabilidades condicionales:
+  | Clase    | P(A|clase) | P(B|clase) |
+  | Spam     |   0.6      |   0.7      |
+  | No Spam  |   0.2      |   0.3      |
+
+  Priors:  P(Spam) = 0.4 ;  P(No Spam) = 0.6
+  Nuevo correo: contiene A y B.
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO (Teorema de Bayes con independencia "naive"):
+--------------------------------------------------------------------------------
+
+P(Clase | datos) = [ P(datos|Clase) · P(Clase) ] / P(datos)
+
+Asunción ingenua: features independientes dada la clase
+   P(A,B|Clase) = P(A|Clase) · P(B|Clase)
+
+Para CADA clase calcular el numerador:
+   num(Clase) = P(A|Clase) · P(B|Clase) · P(Clase)
+
+Normalizar dividiendo entre la suma de numeradores (la "evidencia").
+
+Predicción = la clase con mayor probabilidad posterior.
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+Numerador SPAM:
+  num(Spam) = P(A|Spam) · P(B|Spam) · P(Spam)
+            = 0.6 · 0.7 · 0.4
+            = 0.168
+
+Numerador NO SPAM:
+  num(NoSpam) = P(A|NoSpam) · P(B|NoSpam) · P(NoSpam)
+              = 0.2 · 0.3 · 0.6
+              = 0.036
+
+Evidencia: P(datos) = 0.168 + 0.036 = 0.204
+
+Probabilidades posteriores normalizadas:
+  P(Spam   | A,B) = 0.168 / 0.204 = 0.8235  (82.35%)
+  P(NoSpam | A,B) = 0.036 / 0.204 = 0.1765  (17.65%)
+
+Verificación: 0.8235 + 0.1765 = 1.0 ✓
+
+--------------------------------------------------------------------------------
+💬 RESPUESTAS:
+--------------------------------------------------------------------------------
+
+1) P(Spam | datos)    = 0.8235  (82.35%)
+2) P(No Spam | datos) = 0.1765  (17.65%)
+3) Clasificación: SPAM (mayor probabilidad).
+4) ¿La independencia es real?
+   NO. Las palabras de un correo están correlacionadas (si aparece
+   "oferta" es probable que aparezca "gratis"). Por eso se llama "naive"
+   (ingenuo). Aún así, en la práctica el algoritmo funciona muy bien
+   para texto, especialmente clasificación de spam.
+
+
+
+################################################################################
+#                                                                              #
+#                          PARTE II (7 ejercicios)                             #
+#                                                                              #
+################################################################################
+
+
+
+================================================================================
+EJERCICIO 1 (P2): CÁLCULO DE ENTROPÍA
+================================================================================
+
+ENTRADA DEL EJEMPLO:   Sí = 6, No = 4 (total = 10)
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO (entropía de Shannon):
+--------------------------------------------------------------------------------
+
+H(S) = - Σ pᵢ · log₂(pᵢ)    para cada clase i
+
+Pasos:
+  1. Calcular pᵢ = (conteo de clase i) / total.
+  2. Calcular log₂(pᵢ) = log(pᵢ) / log(2).
+     • log₂(1/2)  = -1
+     • log₂(1/4)  = -2
+     • log₂(0.6)  ≈ -0.737
+     • log₂(0.4)  ≈ -1.322
+     • log₂(0.5)  = -1
+     • log₂(2/3)  ≈ -0.585
+     • log₂(1/3)  ≈ -1.585
+     • log₂(3/5)  ≈ -0.737
+     • log₂(2/5)  ≈ -1.322
+  3. Multiplicar pᵢ · log₂(pᵢ), sumar y cambiar signo.
+
+Rango: H ∈ [0, log₂(c)]
+  • H = 0          → nodo PURO (todo de una clase)
+  • H = log₂(c)    → máxima incertidumbre (con 2 clases, H_max = 1)
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+p(Sí) = 6/10 = 0.6
+p(No) = 4/10 = 0.4
+
+H(S) = - [ 0.6 · log₂(0.6)  +  0.4 · log₂(0.4) ]
+     = - [ 0.6 · (-0.737)   +  0.4 · (-1.322) ]
+     = - [ -0.4422          +  (-0.5288) ]
+     = - [ -0.971 ]
+     = 0.971
+
+→ ENTROPÍA = 0.971
+   Está cerca de 1 (máxima para 2 clases) → nodo bastante mezclado,
+   alta incertidumbre. El árbol intentará dividir para reducirla.
+
+
+
+================================================================================
+EJERCICIO 2 (P2): GANANCIA DE INFORMACIÓN
+================================================================================
+
+ENTRADA DEL EJEMPLO (8 ejemplos):
+
+  | # | Clima    | Humedad | Viento | Jugar |
+  | 1 | Soleado  | Alta    | No     | No    |
+  | 2 | Soleado  | Alta    | Sí     | No    |
+  | 3 | Nublado  | Alta    | No     | Sí    |
+  | 4 | Lluvioso | Media   | No     | Sí    |
+  | 5 | Lluvioso | Baja    | No     | Sí    |
+  | 6 | Lluvioso | Baja    | Sí     | No    |
+  | 7 | Nublado  | Baja    | Sí     | Sí    |
+  | 8 | Soleado  | Media   | No     | No    |
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+1. Calcular H(S) inicial sobre la columna objetivo (Jugar).
+
+2. Para cada atributo A (Clima, Humedad, Viento):
+   a) Particionar el dataset por los valores de A.
+   b) Calcular H(Sv) para cada subconjunto Sv.
+   c) Calcular H(S|A) = Σ (|Sv|/|S|) · H(Sv)  [entropía ponderada]
+   d) Calcular IG(A) = H(S) - H(S|A)
+
+3. Elegir como RAÍZ el atributo con MAYOR IG.
+
+4. Repetir recursivamente en cada rama hasta hojas puras (H=0)
+   o hasta no quedar atributos.
+
+--------------------------------------------------------------------------------
+📐 CÁLCULOS DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+PASO 1: ENTROPÍA INICIAL H(Jugar)
+  Total: 4 Sí, 4 No → H = -[0.5·log₂(0.5) + 0.5·log₂(0.5)] = -[-0.5-0.5] = 1.0
+
+PASO 2a: GANANCIA DE CLIMA
+  Soleado (3 ejemplos #1,#2,#8 → 0 Sí, 3 No):
+     H = -[(0/3)·log₂(0/3) + (3/3)·log₂(1)] = 0   (puro)
+  Nublado (2 ejemplos #3,#7 → 2 Sí, 0 No):
+     H = 0   (puro)
+  Lluvioso (3 ejemplos #4,#5,#6 → 2 Sí, 1 No):
+     H = -[(2/3)·log₂(2/3) + (1/3)·log₂(1/3)]
+       = -[(2/3)·(-0.585) + (1/3)·(-1.585)]
+       = -[-0.390 - 0.528] = 0.918
+  
+  H(S|Clima) = (3/8)·0 + (2/8)·0 + (3/8)·0.918 = 0.344
+  IG(Clima)  = 1.0 - 0.344 = 0.656
+
+PASO 2b: GANANCIA DE HUMEDAD
+  Alta  (3 ejemplos #1,#2,#3 → 1 Sí, 2 No): H = 0.918
+  Media (2 ejemplos #4,#8 → 1 Sí, 1 No):    H = 1.0
+  Baja  (3 ejemplos #5,#6,#7 → 2 Sí, 1 No): H = 0.918
+  
+  H(S|Humedad) = (3/8)·0.918 + (2/8)·1.0 + (3/8)·0.918
+               = 0.344 + 0.250 + 0.344 = 0.938
+  IG(Humedad)  = 1.0 - 0.938 = 0.062
+
+PASO 2c: GANANCIA DE VIENTO
+  No (5 ejemplos #1,#3,#4,#5,#8 → 3 Sí, 2 No):
+     H = -[(3/5)·log₂(3/5) + (2/5)·log₂(2/5)]
+       = -[0.6·(-0.737) + 0.4·(-1.322)] = 0.971
+  Sí (3 ejemplos #2,#6,#7 → 1 Sí, 2 No): H = 0.918
+  
+  H(S|Viento) = (5/8)·0.971 + (3/8)·0.918 = 0.607 + 0.344 = 0.951
+  IG(Viento)  = 1.0 - 0.951 = 0.049
+
+PASO 3: ELEGIR RAÍZ
+  IG(Clima)   = 0.656  ← MÁXIMA
+  IG(Humedad) = 0.062
+  IG(Viento)  = 0.049
+  
+  → RAÍZ DEL ÁRBOL: CLIMA
+
+PASO 4: DIVIDIR Y REPETIR
+  Soleado  → todos NO  → HOJA "No"
+  Nublado  → todos SÍ  → HOJA "Sí"
+  Lluvioso → 2 Sí, 1 No → seguir dividiendo
+  
+  Dentro de Lluvioso (#4,#5,#6):
+    Por VIENTO:
+      Viento=No (#4,#5): ambos SÍ → HOJA "Sí"
+      Viento=Sí (#6):    NO        → HOJA "No"
+    Ganancia perfecta. VIENTO es el siguiente nodo.
+
+ÁRBOL FINAL:
+
+                    [Clima]
+                  /    |    \
+            Soleado  Nublado  Lluvioso
+                /     |        \
+              [No]  [Sí]     [Viento]
+                              /     \
+                            No       Sí
+                            /         \
+                          [Sí]       [No]
+
+
+
+================================================================================
+EJERCICIO 3 (P2): RANDOM FOREST - BAGGING CONCEPTUAL
+================================================================================
+
+ENTRADA DEL EJEMPLO:   5 árboles predicen [1, 0, 1, 1, 0]
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+Para CLASIFICACIÓN (lo del ejemplo):
+   Predicción final = VOTO MAYORITARIO (moda de las predicciones).
+
+Para REGRESIÓN (en otros ejercicios):
+   Predicción final = PROMEDIO de las predicciones.
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+Conteo de votos en [1, 0, 1, 1, 0]:
+  Votos por 1: 3   ← MAYORÍA
+  Votos por 0: 2
+
+→ PREDICCIÓN FINAL: 1
+
+--------------------------------------------------------------------------------
+💬 ¿Por qué reduce varianza?
+--------------------------------------------------------------------------------
+
+Cada árbol entrena con una muestra BOOTSTRAP distinta y un subconjunto
+aleatorio de features (Feature Bagging). Esto hace que sus errores sean
+PARCIALMENTE INDEPENDIENTES.
+
+Al promediar/votar:
+  • Los errores aleatorios SE CANCELAN entre árboles.
+  • Solo persiste la "señal" verdadera que la mayoría capta.
+
+Matemáticamente:
+  Var(promedio de N predicciones independientes) = Var(individual) / N
+
+Por eso un bosque con 100 árboles tiene mucha menor varianza que un
+solo árbol, manteniendo el mismo sesgo. Idea central: BAGGING reduce
+varianza sin aumentar sesgo.
+
+
+
+================================================================================
+EJERCICIO 5 (P2): GRADIENT BOOSTING - PASO A PASO
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+  Predicción inicial:  y_pred = [10, 10, 10]
+  Valores reales:      y      = [12,  8, 15]
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+PASO 1 - Calcular RESIDUOS (errores que el modelo NO captó):
+   residuo_i = y_real_i - y_pred_i
+
+PASO 2 - El SIGUIENTE árbol del ensemble se entrena para PREDECIR
+         los residuos (no la y original). Es decir, aprende a corregir
+         los errores.
+
+PASO 3 - Actualizar la predicción con learning rate η:
+   y_pred_nueva = y_pred_anterior + η · residuos_predichos
+
+   Típico: η = 0.1 (valor pequeño para que aprenda gradualmente).
+
+--------------------------------------------------------------------------------
+📐 CÁLCULO DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+PASO 1 - Residuos:
+   residuos = [12-10, 8-10, 15-10] = [+2, -2, +5]
+
+PASO 2 - Conceptualmente: el segundo árbol predice los residuos.
+   Si los predijera perfectamente: residuos_predichos = [+2, -2, +5].
+
+PASO 3 - Nueva predicción con η = 0.1:
+   y_pred_nueva = [10, 10, 10] + 0.1·[+2, -2, +5]
+                = [10 + 0.2, 10 - 0.2, 10 + 0.5]
+                = [10.2, 9.8, 10.5]
+
+Comparativa de iteraciones (visualización del aprendizaje):
+   iter 0:  [10.0, 10.0, 10.0]   error total = 9
+   iter 1:  [10.2,  9.8, 10.5]   error total = 8.1
+   iter 2:  [10.4,  9.6, 11.0]   error total ≈ 7.3
+   ...
+   iter 50: [11.9,  8.0, 14.9]   error total ≈ 0.2
+
+→ Cada iteración acerca más la predicción a los reales [12, 8, 15].
+
+Diferencia clave con Random Forest:
+  RF: árboles independientes, paralelos, cada uno predice y.
+  GB: árboles secuenciales, cada uno predice los RESIDUOS del anterior.
+
+
+
+================================================================================
+EJERCICIO 7 (P2): K-MEANS - ITERACIÓN MANUAL
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+  Puntos: (1,1), (2,2), (8,8), (9,9)
+  Centroides iniciales: C1 = (1,1), C2 = (9,9)
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO (ciclo asignar/actualizar hasta convergencia):
+--------------------------------------------------------------------------------
+
+PASO 1 - ASIGNAR CLUSTERS:
+   Para cada punto, calcular distancia (puede ser al cuadrado para
+   simplificar, no afecta el resultado) a cada centroide.
+   Asignar al centroide MÁS CERCANO.
+
+PASO 2 - ACTUALIZAR CENTROIDES:
+   Cada centroide nuevo = promedio (media) de todos los puntos
+   asignados a su cluster.
+       Nuevo_centroide_j = (1/|Cj|) · Σ x_i  para x_i ∈ Cj
+
+PASO 3 - REPETIR pasos 1 y 2 hasta que los centroides ya no cambien
+         (CONVERGENCIA).
+
+--------------------------------------------------------------------------------
+📐 CÁLCULOS DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+ITERACIÓN 1
+-----------
+
+PASO 1: ASIGNAR
+   d²(punto, C1=(1,1))   d²(punto, C2=(9,9))   asignación
+  ─────────────────────────────────────────────────────────
+  (1,1): 0² + 0² = 0     8² + 8² = 128         → C1
+  (2,2): 1² + 1² = 2     7² + 7² = 98          → C1
+  (8,8): 7² + 7² = 98    1² + 1² = 2           → C2
+  (9,9): 8² + 8² = 128   0² + 0² = 0           → C2
+
+  Cluster 1: {(1,1), (2,2)}
+  Cluster 2: {(8,8), (9,9)}
+
+PASO 2: ACTUALIZAR
+  Nuevo C1 = ((1+2)/2, (1+2)/2) = (1.5, 1.5)
+  Nuevo C2 = ((8+9)/2, (8+9)/2) = (8.5, 8.5)
+
+ITERACIÓN 2
+-----------
+
+PASO 1: REASIGNAR (con C1=(1.5,1.5), C2=(8.5,8.5))
+  (1,1): d²=0.5 a C1, d²=112.5 a C2 → C1
+  (2,2): d²=0.5 a C1, d²=84.5 a C2  → C1
+  (8,8): d²=84.5 a C1, d²=0.5 a C2  → C2
+  (9,9): d²=112.5 a C1, d²=0.5 a C2 → C2
+
+  La asignación NO CAMBIÓ.
+
+PASO 2: ACTUALIZAR
+  C1 = (1.5, 1.5)  (igual)
+  C2 = (8.5, 8.5)  (igual)
+
+→ CONVERGENCIA. El algoritmo termina.
+
+RESULTADO FINAL:
+  Cluster 1: {(1,1), (2,2)} con centroide (1.5, 1.5)
+  Cluster 2: {(8,8), (9,9)} con centroide (8.5, 8.5)
+  Inercia (WCSS) total = 0.5 + 0.5 + 0.5 + 0.5 = 2.0
+
+
+
+================================================================================
+EJERCICIO 9 (P2): DBSCAN - CLASIFICACIÓN DE PUNTOS
+================================================================================
+
+ENTRADA DEL EJEMPLO:
+  Parámetros: eps = 2, minPts = 3
+  Puntos: (1,1), (2,1), (2,2), (8,8)
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO:
+--------------------------------------------------------------------------------
+
+PASO 1 - Calcular DISTANCIAS entre todos los pares de puntos.
+
+PASO 2 - Determinar VECINDARIO de cada punto (incluyéndose a sí mismo):
+         N_eps(p) = {q : dist(p, q) ≤ eps}
+
+PASO 3 - Clasificar cada punto:
+         • CORE point (núcleo): |N_eps(p)| ≥ minPts.
+         • BORDER point (borde): no es core, pero está en el vecindario
+           de algún core point.
+         • NOISE (ruido): ni core ni border. Outlier.
+
+PASO 4 - Formar clusters: los core points conectados (alcanzables por
+         densidad) forman un cluster; los borders se asocian al cluster
+         del core más cercano; el ruido queda fuera.
+
+--------------------------------------------------------------------------------
+📐 CÁLCULOS DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+PASO 1: distancias
+  d((1,1),(2,1)) = √(1+0)  = 1.00       ≤ 2 ✓
+  d((1,1),(2,2)) = √(1+1)  = √2 ≈ 1.41  ≤ 2 ✓
+  d((1,1),(8,8)) = √(49+49)= √98 ≈ 9.90 > 2 ✗
+  d((2,1),(2,2)) = √(0+1)  = 1.00       ≤ 2 ✓
+  d((2,1),(8,8)) = √(36+49)= √85 ≈ 9.22 > 2 ✗
+  d((2,2),(8,8)) = √(36+36)= √72 ≈ 8.49 > 2 ✗
+
+PASO 2: vecindarios (incluyendo el propio punto)
+  N((1,1)) = {(1,1), (2,1), (2,2)}    → 3 puntos
+  N((2,1)) = {(2,1), (1,1), (2,2)}    → 3 puntos
+  N((2,2)) = {(2,2), (1,1), (2,1)}    → 3 puntos
+  N((8,8)) = {(8,8)}                  → 1 punto
+
+PASO 3: clasificar (minPts = 3)
+  (1,1): 3 vecinos ≥ 3 → CORE ✓
+  (2,1): 3 vecinos ≥ 3 → CORE ✓
+  (2,2): 3 vecinos ≥ 3 → CORE ✓
+  (8,8): 1 vecino < 3 → no es core
+         además ningún core lo tiene como vecino → NO es border
+         → es RUIDO
+
+RESULTADO FINAL:
+  | Punto  | Tipo      | Cluster |
+  | (1,1)  | NÚCLEO    | C1      |
+  | (2,1)  | NÚCLEO    | C1      |
+  | (2,2)  | NÚCLEO    | C1      |
+  | (8,8)  | RUIDO     | -1      |
+
+  • Núcleos: (1,1), (2,1), (2,2) → todos forman un único cluster C1.
+  • Borde: ninguno (todos los puntos densos son cores).
+  • Ruido: (8,8) — está aislado del resto.
+
+Ventaja sobre K-Means: K-Means hubiera forzado a (8,8) a algún cluster.
+DBSCAN correctamente lo reconoce como outlier.
+
+
+
+================================================================================
+EJERCICIO 10 (P2): ISOLATION FOREST - INTUICIÓN
+================================================================================
+
+ENTRADA DEL EJEMPLO:   dataset = [10, 12, 11, 13, 100]
+
+--------------------------------------------------------------------------------
+🛠 PROCEDIMIENTO (intuición):
+--------------------------------------------------------------------------------
+
+1. Identificar el valor que está "lejos" del grupo (visualmente o
+   con media ± desviación). Ese es la anomalía.
+
+2. Justificar con la intuición de Isolation Forest:
+   • Anomalías = "pocas y diferentes" → fáciles de aislar con pocos
+     cortes aleatorios.
+   • Puntos normales = rodeados de vecinos similares → necesitan
+     muchos cortes para separarse.
+
+--------------------------------------------------------------------------------
+📐 RESPUESTAS DEL EJEMPLO:
+--------------------------------------------------------------------------------
+
+1) ¿Cuál es la anomalía?
+   → EL VALOR 100.
+   Los demás valores se concentran en [10, 13] (rango muy estrecho).
+   100 está a unas 79 desviaciones estándar del resto. Imposible que
+   pertenezca a la misma distribución.
+
+2) ¿Por qué Isolation Forest lo detecta rápido?
+   El algoritmo hace cortes ALEATORIOS en el rango [min, max].
+   • Para AISLAR el 100: con un solo corte aleatorio entre 10 y 100,
+     hay alta probabilidad de que caiga entre 13 y 100. Resultado:
+     100 queda solo. Profundidad = 1 corte (muy pocos).
+   • Para AISLAR un valor normal (ej. 11): está rodeado de (10, 12, 13).
+     Necesitamos muchos cortes consecutivos para separarlo.
+     Profundidad = 3-4+ cortes.
+   
+   Repitiendo con muchos árboles aleatorios y promediando la profundidad,
+   las anomalías se distinguen claramente (profundidad promedio mucho
+   menor).
+
+3) ¿Qué significa "profundidad corta"?
+   La profundidad de un punto en un iTree = número de cortes (niveles)
+   que se necesitan para que ese punto quede SOLO en una hoja.
+   
+   • Profundidad CORTA → punto fácil de aislar → ANOMALÍA.
+   • Profundidad LARGA → punto rodeado de similares → NORMAL.
+   
+   Anomaly Score:    s(x, n) = 2^(-E[h(x)] / c(n))
+   Donde E[h(x)] es la profundidad promedio del punto en todos los
+   árboles, y c(n) es un factor de normalización.
+   
+   Interpretación:
+     s ≈ 1.0 → ANOMALÍA clara
+     s ≈ 0.5 → zona neutra
+     s < 0.5 → punto normal
+
+
+
+================================================================================
+                       FIN DE LOS 15 EJERCICIOS CON ENTRADAS
+================================================================================
+
+
+
+################################################################################
+#                                                                              #
+#                FORMULARIO RÁPIDO (para llevar al examen)                     #
+#                                                                              #
+################################################################################
+
+CLASIFICACIÓN
+─────────────
+  Accuracy   = (TP + TN) / (TP + TN + FP + FN)
+  Precision  = TP / (TP + FP)
+  Recall     = TP / (TP + FN)
+  F1-score   = 2·P·R / (P + R)
+
+REGRESIÓN
+─────────
+  MAE   = (1/n) · Σ |y - ŷ|
+  MSE   = (1/n) · Σ (y - ŷ)²
+  RMSE  = √MSE
+
+DISTANCIAS
+──────────
+  Euclidiana:  d(p,q) = √( Σ (pᵢ - qᵢ)² )
+  Manhattan:   d(p,q) = Σ |pᵢ - qᵢ|
+
+ENTROPÍA Y GANANCIA (árboles)
+─────────────────────────────
+  H(S) = -Σ pᵢ · log₂(pᵢ)
+  IG(S, A) = H(S) - Σ (|Sv|/|S|) · H(Sv)
+  El árbol elige el atributo con MAYOR ganancia.
+
+  Logaritmos útiles:
+    log₂(0.5) = -1            log₂(0.6) ≈ -0.737
+    log₂(0.4) ≈ -1.322        log₂(2/3) ≈ -0.585
+    log₂(1/3) ≈ -1.585        log₂(3/5) ≈ -0.737
+    log₂(2/5) ≈ -1.322
+
+REGRESIÓN LOGÍSTICA
+───────────────────
+  P(y=1|x) = 1 / (1 + e^{-(b·x + c)})
+  Umbral 0.5 ↔ b·x + c = 0  →  x_umbral = -c/b
+  Coeficiente b → pendiente del logit; odds ratio = e^b
+
+NAIVE BAYES (asunción de independencia)
+───────────────────────────────────────
+  P(C | A,B) ∝ P(A|C) · P(B|C) · P(C)
+  Calcular numerador para cada clase, dividir entre la suma para
+  obtener probabilidad normalizada.
+
+K-MEANS
+───────
+  1. Asignar cada punto al centroide más cercano.
+  2. Recalcular centroides como promedio de sus puntos.
+  3. Repetir hasta convergencia.
+
+DBSCAN
+──────
+  Para cada punto p contar |N_eps(p)|:
+    • ≥ minPts → CORE
+    • < minPts pero está en N_eps de un core → BORDER
+    • ninguno de los anteriores → NOISE
+
+GRADIENT BOOSTING
+─────────────────
+  residuo_i = y_real - y_pred
+  El siguiente árbol predice los residuos
+  y_pred_nueva = y_pred_anterior + η · residuos_predichos
+
+ISOLATION FOREST
+────────────────
+  Anomalías = pocas y diferentes → profundidad CORTA en iTrees
+  s(x, n) = 2^(-E[h(x)]/c(n))    s≈1 → anomalía;  s<0.5 → normal
+
+================================================================================
+                        ¡MUCHO ÉXITO MAÑANA! 🍀
+================================================================================
