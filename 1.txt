@@ -1,0 +1,343 @@
+================================================================
+RESPUESTAS - EXAMEN TEMA 5
+Percepción, lenguaje, visión y ética en IA
+================================================================
+
+
+==================== PREGUNTAS ABIERTAS ========================
+
+
+----------------------------------------------------------------
+3. Diferencias entre Stemming y Lematización
+----------------------------------------------------------------
+
+El Stemming corta la palabra de manera más burda, usando reglas
+para quitar sufijos. El resultado es una raíz cruda que a veces
+ni siquiera es una palabra real (por ejemplo "comiendo" → "com-").
+
+La Lematización en cambio sí hace un análisis lingüístico de la
+palabra y la lleva a su forma de diccionario, llamada "lema". Por
+ejemplo "fueron" → "ser", o "mejores" → "bueno".
+
+En resumen: el Stemming corta, la Lematización entiende. El primero
+es más rápido pero menos preciso; la segunda es más lenta pero
+mucho más correcta semánticamente.
+
+
+----------------------------------------------------------------
+7. Propósito de la Visión Computacional (biológico y digital)
+----------------------------------------------------------------
+
+La Visión Computacional tiene dos enfoques:
+
+Desde el lado biológico, busca estudiar y replicar cómo funciona
+el sistema visual humano: la retina, el nervio óptico, el córtex
+visual. La idea es entender cómo percibimos para inspirar
+arquitecturas computacionales (de hecho, las CNN nacieron de esto).
+
+Desde el lado digital o de ingeniería, el objetivo es construir
+software y sistemas autónomos que extraigan información de los
+píxeles de una imagen para hacer tareas como reconocimiento facial,
+detección de objetos, OCR, diagnóstico médico, etc.
+
+Los dos enfoques se complementan: los modelos modernos están
+inspirados en biología pero resuelven problemas reales de ingeniería.
+
+
+----------------------------------------------------------------
+8. Responsabilidad del profesional según la ACM 2018
+----------------------------------------------------------------
+
+El Código de Ética de la ACM actualizado en 2018 establece que el
+interés y el bienestar social son la prioridad central de cualquier
+desarrollo tecnológico. O sea que el profesional de la computación
+no puede deslindarse de las consecuencias sociales de lo que crea.
+
+Tiene la responsabilidad de diseñar sistemas que protejan la
+dignidad humana, evitar la discriminación algorítmica (sesgos) y
+asegurar que el software tenga un impacto constructivo en la
+sociedad y no genere daños. También debe ser transparente sobre
+las capacidades y límites del sistema.
+
+La idea es que antes de programar algo, hay que pensar en cómo
+va a afectar a la gente.
+
+
+----------------------------------------------------------------
+11. IA y ODS 13 (Acción por el Clima)
+----------------------------------------------------------------
+
+Los modelos grandes de IA como GPT, Claude o los modelos de
+difusión necesitan entrenarse en clusters con miles de GPUs durante
+semanas o meses. Eso consume cantidades enormes de electricidad,
+y si esa energía viene de combustibles fósiles, genera muchísimo
+CO2. Se estima que entrenar un solo modelo grande puede emitir
+tanto carbono como cientos de vuelos transatlánticos.
+
+A esto hay que sumarle que los centros de datos requieren sistemas
+de enfriamiento que también gastan mucha energía y agua. Por eso
+el desarrollo de IA actual choca con el ODS 13: si no se usan
+energías renovables, en lugar de ayudar al planeta estamos
+acelerando el cambio climático.
+
+
+----------------------------------------------------------------
+12. IA como motor positivo para ODS 3 (Salud) y ODS 4 (Educación)
+----------------------------------------------------------------
+
+En el ODS 3 (Salud), la IA aporta muchísimo. Con visión computacional
+se detectan tumores, cáncer, retinopatía diabética y otras
+enfermedades en radiografías y resonancias. También permite diseñar
+tratamientos personalizados según la genética del paciente, predecir
+brotes epidemiológicos (como pasó con COVID) y acelerar el
+descubrimiento de fármacos con modelos como AlphaFold.
+
+En el ODS 4 (Educación), la IA permite hacer plataformas de
+aprendizaje adaptativo que se ajustan al ritmo de cada estudiante
+(como nuestros "pollitos"). También funciona como tutor virtual
+24/7 con chatbots tipo ChatGPT o Claude, y sirve para corrección
+automática de tareas. Todo esto democratiza el acceso a educación
+de calidad incluso en zonas rurales o con pocos profesores.
+
+
+----------------------------------------------------------------
+13. Dilema de la automatización vs. ODS 8 (Trabajo)
+----------------------------------------------------------------
+
+El dilema es que la automatización puede dejar a mucha gente sin
+trabajo, sobre todo en tareas repetitivas: cajeros, operadores de
+call center, choferes, traductores, etc. Esto aumenta la brecha
+de desigualdad económica porque los beneficios de la tecnología
+se concentran en los dueños del capital, no en los trabajadores.
+
+La salida ética desde la ingeniería es diseñar "IA colaborativa"
+en lugar de "IA sustitutiva", o sea hacer sistemas que aumenten
+las capacidades humanas en vez de reemplazarlas (como un copiloto
+de programación o un asistente médico). Además se necesitan
+programas de capacitación continua para que la gente pueda migrar
+a nuevos roles. La IA debería dignificar el trabajo, no precarizarlo.
+
+
+----------------------------------------------------------------
+14. Early Fusion vs Late Fusion
+----------------------------------------------------------------
+
+La fusión temprana (Early Fusion) junta las modalidades al inicio
+del flujo. O sea, tomas el texto, la imagen, el audio, y combinas
+sus características crudas o vectores iniciales antes de pasarlos
+por un solo modelo principal.
+
+La fusión tardía (Late Fusion) hace lo contrario: entrena un modelo
+separado para cada modalidad y al final combina las predicciones,
+ya sea con votación, promedio ponderado o un meta-clasificador.
+
+El principal desafío técnico de la fusión temprana es alinear
+representaciones vectoriales de naturalezas muy distintas en un
+mismo espacio latente. Por ejemplo, un píxel y un token de texto
+son completamente diferentes en escala, dimensión y semántica.
+Lograr que el modelo los procese juntos sin perder información ni
+sesgarse hacia una modalidad es complicado.
+
+La fusión temprana captura mejor las correlaciones finas entre
+modalidades, mientras que la tardía es más modular y fácil de
+implementar pero pierde detalle.
+
+
+==================== EJERCICIOS ========================
+
+
+----------------------------------------------------------------
+PNL - Ejercicio 2: Bolsa de Palabras (corpus alternativo)
+----------------------------------------------------------------
+
+Corpus:
+   Documento 1: "el perro juega en el parque"
+   Documento 2: "el gato duerme en el parque"
+
+Vocabulario (palabras únicas):
+   {el, perro, juega, en, parque, gato, duerme}
+
+Matriz BoW (cuántas veces aparece cada palabra):
+
+          el  perro  juega  en  parque  gato  duerme
+   Doc 1:  2    1      1    1    1       0     0
+   Doc 2:  2    0      0    1    1       1     1
+
+¿Qué información se pierde?
+
+Se pierde el orden de las palabras. "El perro persigue al gato"
+y "El gato persigue al perro" darían el mismo vector aunque
+significan cosas opuestas. También se pierde el contexto semántico,
+las relaciones gramaticales, y las palabras muy comunes como "el"
+o "en" dominan el vector sin aportar significado real. Por eso
+después se prefieren TF-IDF, Word2Vec o embeddings contextuales
+tipo BERT.
+
+
+----------------------------------------------------------------
+PNL - Ejercicio 9: Pipeline de NLP
+----------------------------------------------------------------
+
+Entrada: "Me encanta este producto, funciona excelente"
+
+Pipeline paso a paso:
+
+1. Limpieza:
+   Quitamos puntuación y pasamos a minúsculas.
+   → "me encanta este producto funciona excelente"
+
+2. Tokenización:
+   Dividimos en tokens individuales.
+   → ["me", "encanta", "este", "producto", "funciona", "excelente"]
+
+3. Vectorización:
+   Convertimos los tokens a números. Se puede usar Bag of Words,
+   TF-IDF, Word2Vec o embeddings contextuales como BERT.
+
+4. Clasificación:
+   Pasamos el vector a un modelo (Naive Bayes, regresión logística,
+   SVM o red neuronal).
+   → Predicción: POSITIVO (por las palabras "encanta" y "excelente").
+
+Diagrama:
+
+   Texto crudo
+       ↓
+   Limpieza
+       ↓
+   Tokenización
+       ↓
+   Vectorización
+       ↓
+   Clasificación
+       ↓
+   Positivo / Negativo / Neutral
+
+
+----------------------------------------------------------------
+VC - Ejercicio 3: Convolución (2da posición)
+----------------------------------------------------------------
+
+Matriz:
+   [ 1  2  3 ]
+   [ 4  5  6 ]
+   [ 7  8  9 ]
+
+Kernel:
+   [ 1   0 ]
+   [ 0  -1 ]
+
+Como el kernel es 2x2 y la matriz 3x3, el resultado tiene 4
+posiciones (2x2 de salida). La segunda posición es deslizar el
+kernel un paso a la derecha, tomando la submatriz:
+
+   [ 2  3 ]
+   [ 5  6 ]
+
+Cálculo:
+   = (2)(1) + (3)(0) + (5)(0) + (6)(-1)
+   = 2 + 0 + 0 - 6
+   = -4
+
+Resultado de la 2da posición: -4
+
+¿Qué tipo de características detecta este filtro?
+
+Este kernel compara el píxel superior-izquierdo con el inferior-
+derecho de cada ventana, así que detecta gradientes y bordes
+diagonales. En zonas uniformes el resultado se acerca a cero, y
+en zonas con cambios de intensidad da valores grandes. Es un
+detector simple de bordes orientados en diagonal.
+
+
+----------------------------------------------------------------
+VC - Ejercicio 7: Data Augmentation
+----------------------------------------------------------------
+
+5 técnicas comunes de aumento de datos:
+
+1. Rotación: girar la imagen unos grados (±15°, ±30°).
+2. Flip / Volteo: espejar la imagen horizontal o verticalmente.
+3. Recorte y zoom: tomar regiones aleatorias o acercar partes.
+4. Cambios de brillo, contraste y saturación.
+5. Ruido gaussiano: simular sensores de baja calidad.
+
+¿Por qué ayuda a evitar overfitting?
+
+El overfitting ocurre cuando el modelo memoriza el dataset en vez
+de aprender patrones generales. El data augmentation ayuda porque
+aumenta la diversidad del dataset sin tener que recolectar más
+imágenes reales: en cada época el modelo ve versiones ligeramente
+distintas de cada imagen. Eso lo obliga a aprender características
+invariantes (un gato sigue siendo un gato aunque esté rotado o con
+menos luz) en lugar de patrones superficiales. Al final generaliza
+mejor a imágenes nuevas que nunca había visto.
+
+
+----------------------------------------------------------------
+Multimodales - Ejercicio 15: CLIP
+----------------------------------------------------------------
+
+CLIP (Contrastive Language-Image Pre-training) es un modelo
+multimodal de OpenAI lanzado en 2021. Aprende a relacionar imágenes
+con textos en lenguaje natural.
+
+Funciona con dos encoders independientes: uno de imagen (ViT o
+ResNet) y otro de texto (Transformer). Ambos proyectan sus salidas
+al mismo espacio vectorial (típicamente de 512 dimensiones), así
+se pueden comparar imágenes y textos directamente con similitud
+coseno.
+
+¿Por qué usa aprendizaje contrastivo?
+
+Porque le permite aprovechar millones de pares imagen-texto
+extraídos de internet sin necesidad de etiquetas manuales. En cada
+batch, CLIP empuja los pares correctos (imagen + su descripción
+real) a estar cerca en el espacio vectorial, y los pares incorrectos
+a estar lejos. Esto le da una capacidad muy útil llamada "zero-shot
+classification": puede clasificar imágenes en categorías que nunca
+vio durante el entrenamiento, solo describiéndolas con texto. Es
+mucho más flexible que un clasificador tradicional con clases fijas.
+
+
+----------------------------------------------------------------
+Multimodales - Ejercicio 18: Sesgos (doctor/enfermera)
+----------------------------------------------------------------
+
+Caso: Un modelo asocia "doctor" con hombres y "enfermera" con
+mujeres.
+
+¿De dónde viene el sesgo?
+
+Principalmente de los datos de entrenamiento. El modelo aprende
+de imágenes y textos sacados de internet, libros y redes sociales,
+y esos datos reflejan estereotipos históricos y culturales: la
+mayoría de las imágenes etiquetadas como "doctor" muestran hombres
+y las de "enfermera" muestran mujeres. El modelo no inventa el
+sesgo, lo aprende y además lo amplifica.
+
+También influye el sesgo histórico de la profesión, la
+subrepresentación de minorías en los datos y los sesgos
+inconscientes de quienes etiquetan las imágenes.
+
+¿Cómo mitigarlo?
+
+- Balancear el dataset agregando más imágenes de mujeres doctoras
+  y hombres enfermeros.
+- Aplicar técnicas de debiasing en los embeddings para neutralizar
+  la dirección de género.
+- Agregar un término de penalización en la función de pérdida que
+  castigue las correlaciones discriminatorias.
+- Usar aumentación contrafactual (versiones con género invertido).
+- Tener equipos de desarrollo diversos que detecten sesgos.
+- Auditar el modelo en producción y publicar "model cards" con
+  sus limitaciones conocidas.
+
+El sesgo no es un bug técnico, es un reflejo de desigualdades
+sociales en los datos. Mitigarlo requiere intervención en todas
+las etapas, desde la recolección hasta el despliegue.
+
+
+================================================================
+                       ¡SUERTE EN EL EXAMEN!
+================================================================
